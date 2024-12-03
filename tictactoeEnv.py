@@ -111,7 +111,7 @@ class tictactoe():
                 if self.play_mode == "human":
                     print("Human Won")
                     self.render()
-                reward = -3
+                reward = -1
                 terminated = True
             else:
                 reward += 0
@@ -123,7 +123,7 @@ class tictactoe():
             col = action % 3
             self.board[row][col] = 2
             if self.win_check(self.board) == 1:
-                reward = -3
+                reward = -1
                 terminated = True
             elif self.win_check(self.board) == 2:
                 reward += 2
@@ -167,11 +167,44 @@ class tictactoe():
                 else:
                     break
         else:
-            otherAction = self.action_space.sample(np.array(self.mask,dtype = np.int8))
+            if(self.firstMove == True):
+                otherAction = self.action_space.sample(np.array(self.mask,dtype = np.int8))
+                #CHECK IS WE CAN WIN
+                if(self.moveNumber >= 2):
+                    #row
+                    for i in range(3):
+                        # if the sum is 4 and there is a zero
+                        if sum(self.board[i][0:3]) == 4:
+                            if 0 in self.board[i][0:3]:
+                                otherAction = i * 3
+                                otherAction += self.board[i][0:3].index(0)
+                                
+                    #column
+                    for i in range(3):
+                        col = [self.board[0][i], self.board[1][i], self.board[2][i]]
+                        if sum(col) == 4:
+                            if 0 in col:
+                                otherAction = col.index(0) * 3
+                                otherAction += i
+                    #diagnals
+                    dag = [self.board[0][0], self.board[1][1], self.board[2][2]]
+                    if sum(dag) == 4:
+                        if 0 in dag:
+                            otherAction = dag.index(0)*3 + dag.index(0)
+                            
+                    dag = [self.board[0][2], self.board[1][1], self.board[2][0]]
+                    if sum(dag) == 4:
+                        if 0 in dag:
+                            otherAction = dag.index(0)*3 + (2 - dag.index(0))
+            else:
+                print("sorry only only the bot can go first")
+                quit()
+                
+                
         if self.firstMove == False:
             row = otherAction // 3
             col = otherAction % 3
-            self.board[row][col] = 1
+            self.self.board[row][col] = 1
         else:
             row = otherAction // 3
             col = otherAction % 3
